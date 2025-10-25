@@ -14,6 +14,7 @@ import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -26,6 +27,7 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
+    private static final int NEXT_BRICK_SIZE = 18; // Larger for Visibility
 
     @FXML
     private GridPane gamePanel;
@@ -36,6 +38,10 @@ public class GuiController implements Initializable {
     @FXML
     private GridPane brickPanel;
 
+    //Preview panel for the next piece
+    @FXML
+    private GridPane nextPiecePanel;
+
     @FXML
     private GameOverPanel gameOverPanel;
 
@@ -44,6 +50,8 @@ public class GuiController implements Initializable {
     private InputEventListener eventListener;
 
     private Rectangle[][] rectangles;
+
+    private Rectangle[][] nextPieceRectangles;
 
     private Timeline timeLine;
 
@@ -113,6 +121,11 @@ public class GuiController implements Initializable {
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
 
+        //Initialize next piece preview panel (4x4 grid)
+        if (nextPiecePanel != null) {
+            initNextPiecePanel();
+            updateNextPiecePreview(brick.getNextBrickData());
+        }
 
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(400),
@@ -120,6 +133,51 @@ public class GuiController implements Initializable {
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
+    }
+
+    //Initialize the next piece preview panel
+    private void initNextPiecePanel() {
+        nextPiecePanel.getChildren().clear();
+        nextPieceRectangles = new Rectangle[4][4]; // 4x4 preview
+
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                Rectangle rectangle = new Rectangle(NEXT_BRICK_SIZE, NEXT_BRICK_SIZE);
+                rectangle.setFill(Color.TRANSPARENT);
+                rectangle.setArcHeight(6);
+                rectangle.setArcWidth(6);
+                nextPieceRectangles[i][j] = rectangle;  //Stores the rectangles
+                nextPiecePanel.add(rectangle, j, i);
+            }
+        }
+    }
+
+    //Update the next piece Preview
+    public void updateNextPiecePreview(int[][] nextBrickData){
+        if (nextPieceRectangles == null || nextBrickData == null){
+            return;
+        }
+
+        //Clear the preview
+        for (int i = 0; i < 4; i++){
+            for (int j = 0; j < 4; j++){
+                nextPieceRectangles[i][j].setFill(Color.TRANSPARENT);
+            }
+        }
+
+        //Center the piece in the 4x4 grid
+        int offsetY = (4 - nextBrickData.length) / 2;
+        int offsetX = (4 - nextBrickData[0].length) / 2;
+
+        //Draw the next piece
+        for (int i = 0; i < nextBrickData.length; i++){
+            for (int j = 0; j < nextBrickData[i].length; j++){
+                if (i + offsetY < 4 && j + offsetX < 4){
+                    setRectangleData(nextBrickData[i][j], nextPieceRectangles[i + offsetY][j + offsetX]);
+
+                }
+            }
+        }
     }
 
     private Paint getFillColor(int i) {

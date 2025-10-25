@@ -20,8 +20,10 @@ public class Main extends Application {
         Parent root = fxmlLoader.load();
         GuiController c = fxmlLoader.getController();
 
+        // Panel Settings
         primaryStage.setTitle("TetrisJFX");
-        Scene scene = new Scene(root, 300, 510);
+        //Width, Height
+        Scene scene = new Scene(root, 1280, 780);
         primaryStage.setScene(scene);
         primaryStage.show();
         new GameController(c);

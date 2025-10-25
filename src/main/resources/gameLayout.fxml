@@ -6,21 +6,76 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
-<Pane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml">
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
-        <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
-        </center>
-    </BorderPane>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
+
+<?import javafx.geometry.Insets?>
+<StackPane fx:controller="com.comp2042.GuiController"
+            xmlns:fx="http://javafx.com/fxml"
+            prefHeight="720" prefWidth="950"
+            style="-fx-background-color: #1a1a2e;">
+
+    <!--Main game area centered -->
+    <HBox alignment="CENTER" spacing="20">
+
+        <!-- Game Board area -->
         <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
+            <StackPane>
+                <!-- Main game board -->
+                <BorderPane styleClass="gameBoard" fx:id="gameBoard">
+                    <center>
+                        <GridPane fx:id="gamePanel" hgap="1" vgap="1"
+                                    style="-fx-background-color: #0a0a15; -fx-border-color: #2a2a3e;
+                                    -fx-border-width: 2;"/>
+                    </center>
+                </BorderPane>
+
+                <!-- Current brick overlay -->
+                <Group>
+                    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+                </Group>
+
+                <!-- Notification overlay -->
+                <Group fx:id="groupNotification" layoutX="14" layoutY="203">
+                    <VBox alignment="CENTER">
+                        <GameOverPanel fx:id="gameOverPanel"/>
+                    </VBox>
+                </Group>
+            </StackPane>
+
         </VBox>
-    </Group>
+
+    <!-- Right sidebar for next piece Preview -->
+        <VBox spacing="10" alignment="TOP_CENTER" prefWidth="130">
+
+            <!-- Next section -->
+            <VBox spacing="0" alignment="TOP_CENTER"
+                  style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 8; -fx-border-color: #000000;
+                  -fx-border-width: 3; -fx-border-radius: 8;">
+
+                <!-- Label Next as the Header-->
+                <Label text="NEXT"
+                       style="-fx-text-fill: #000000; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 8 0 5 0;"/>
+
+                <!-- Separator Line-->
+                <Region prefHeight="2" style="-fx-background-color: #000000;"/>
+
+                <!-- Single next piece preview in tall box -->
+                <VBox spacing="0" alignment="CENTER" style="-fx-padding: 15 10 15 10;">
+                    <StackPane prefHeight="80" prefWidth="80"
+                               style="-fx-background-color: #000000;">
+                        <GridPane fx:id="nextPiecePanel"
+                                  hgap="1" vgap="1"
+                                  alignment="CENTER"/>
+                    </StackPane>
+                </VBox>
+
+                <!-- Bottom padding to make it taller -->
+                <Region prefHeight="350"/>
+            </VBox>
+
+        </VBox>
+    </HBox>
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>
-</Pane>
+</StackPane>
