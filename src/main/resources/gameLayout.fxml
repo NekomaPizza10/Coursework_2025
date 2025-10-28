@@ -18,7 +18,7 @@
     <HBox alignment="TOP_CENTER" spacing="10" StackPane.alignment="CENTER" style="-fx-padding: 60 0 0 0;">
 
         <!-- Left side panel - HOLD Box -->
-        <VBox spacing="10" alignment="TOP_CENTER" maxHeight="120">
+        <VBox spacing="10" alignment="TOP_CENTER" maxHeight="160" maxWidth="120">
 
             <!-- HOLD section -->
             <VBox spacing="0" alignment="TOP_CENTER"
@@ -77,7 +77,7 @@
         </VBox>
 
     <!-- Right side panel - NEXT piece Preview Box -->
-        <VBox spacing="10" alignment="TOP_CENTER" prefWidth="120">
+        <VBox spacing="10" alignment="TOP_CENTER" maxWidth="120" maxHeight="660">
 
             <!-- NEXT section -->
             <VBox spacing="0" alignment="TOP_CENTER"
