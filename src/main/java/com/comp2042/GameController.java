@@ -62,4 +62,17 @@ public class GameController implements InputEventListener {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
+
+    // Handle HOLD event
+    @Override
+    public boolean onHoldEvent(){
+        boolean success = board.holdCurrentBrick();
+        if(success) {
+            // Update hold preview
+            viewGuiController.updateHoldPiecePreview(board.getHeldBrickData());
+
+        }
+        return success;
+    }
+
 }

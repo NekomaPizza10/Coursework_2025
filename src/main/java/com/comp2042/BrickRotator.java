@@ -26,5 +26,10 @@ public class BrickRotator {
         currentShape = 0;
     }
 
+    // Add getter method
 
+
+    public Brick getBrick() {
+        return brick;
+    }
 }

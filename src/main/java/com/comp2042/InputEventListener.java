@@ -11,4 +11,12 @@ public interface InputEventListener {
     ViewData onRotateEvent(MoveEvent event);
 
     void createNewGame();
+
+    // Hold event
+    /**
+     * Called when player presses hold Key
+     * @return true if hold was successful
+     */
+    boolean onHoldEvent();
+
 }

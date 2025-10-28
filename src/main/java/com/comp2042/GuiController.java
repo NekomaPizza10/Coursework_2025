@@ -42,6 +42,10 @@ public class GuiController implements Initializable {
     @FXML
     private GridPane nextPiecePanel;
 
+    //Preview panel for the hold piece
+    @FXML
+    private GridPane holdPiecePanel;
+
     @FXML
     private GameOverPanel gameOverPanel;
 
@@ -51,7 +55,11 @@ public class GuiController implements Initializable {
 
     private Rectangle[][] rectangles;
 
+    //Rectangles for the next piece preview
     private Rectangle[][] nextPieceRectangles;
+
+    //Rectangles for the hold piece preview
+    private Rectangle[][] holdPieceRectangles;
 
     private Timeline timeLine;
 
@@ -82,6 +90,15 @@ public class GuiController implements Initializable {
                     }
                     if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
                         moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+                        keyEvent.consume();
+                    }
+
+                    // HOLD Key (C or SHIFT)
+                    if (keyEvent.getCode() == KeyCode.C || keyEvent.getCode() == KeyCode.SHIFT) {
+                        boolean success = eventListener.onHoldEvent();
+                        if (success) {
+                            gamePanel.requestFocus();
+                        }
                         keyEvent.consume();
                     }
                 }
@@ -125,6 +142,11 @@ public class GuiController implements Initializable {
         if (nextPiecePanel != null) {
             initNextPiecePanel();
             updateNextPiecePreview(brick.getNextBrickData());
+        }
+
+        //Initialize hold piece preview panel (4x4 grid)
+        if (holdPiecePanel != null){
+            initHoldPiecePanel();
         }
 
         timeLine = new Timeline(new KeyFrame(
@@ -180,6 +202,55 @@ public class GuiController implements Initializable {
         }
     }
 
+    //Initialize the hold piece preview panel
+    private void initHoldPiecePanel(){
+        holdPiecePanel.getChildren().clear();
+        holdPieceRectangles = new Rectangle[4][4]; // 4x4 preview
+
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                Rectangle rectangle = new Rectangle(NEXT_BRICK_SIZE, NEXT_BRICK_SIZE);
+                rectangle.setFill(Color.TRANSPARENT);
+                rectangle.setArcHeight(6);
+                rectangle.setArcWidth(6);
+                holdPieceRectangles[i][j] = rectangle;
+                holdPiecePanel.add(rectangle, j, i);
+            }
+        }
+    }
+
+    // Update the hold Piece Preview
+    public void updateHoldPiecePreview(int[][] holdBrickData){
+        if (holdPieceRectangles == null){
+            return;
+        }
+
+        //Clear the preview
+        for (int i = 0; i < 4; i++){
+            for (int j = 0; j < 4; j++){
+                holdPieceRectangles[i][j].setFill(Color.TRANSPARENT);
+            }
+        }
+
+        //If no hold piece; Leave it empty
+        if (holdBrickData == null){
+            return;
+        }
+
+        //Center the piece in the 4x4 grid
+        int offsetY = (4 - holdBrickData.length)/2;
+        int offsetX = (4 - holdBrickData[0].length)/2;
+
+        //Draw the hold piece
+        for (int i = 0; i < holdBrickData.length; i++){
+            for (int j = 0; j < holdBrickData[i].length; j++){
+                if (i + offsetY >= 0 && i + offsetY < 4 && j + offsetX >= 0 && j + offsetX < 4){
+                    setRectangleData(holdBrickData[i][j], holdPieceRectangles[i + offsetY][j + offsetX]);
+                }
+            }
+        }
+    }
+
     private Paint getFillColor(int i) {
         Paint returnPaint;
         switch (i) {
@@ -223,6 +294,11 @@ public class GuiController implements Initializable {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
                 }
+            }
+
+            //Update next piece preview whenever brick data changes
+            if (brick.getNextBrickData() != null){
+                updateNextPiecePreview(brick.getNextBrickData());
             }
         }
     }
@@ -275,6 +351,16 @@ public class GuiController implements Initializable {
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+
+        // Clear and reinitialize next piece preview
+        if (nextPiecePanel != null) {
+            initNextPiecePanel();
+        }
+
+        // Clear and reinitialize hold piece preview
+        if (holdPiecePanel != null){
+            initHoldPiecePanel();
+        }
     }
 
     public void pauseGame(ActionEvent actionEvent) {

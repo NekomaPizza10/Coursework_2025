@@ -16,6 +16,10 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+    //Hold functionality fields
+    private Brick heldBrick = null;         //Store the held brick
+    private boolean hasUsedHold = false;    // Prevent multiple holds per piece
+
     public SimpleBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -85,7 +89,10 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(4, 10);
+        currentOffset = new Point(4, 0);   //FIXED: Start at the top
+
+        // Reset hold flag when new brick is created
+        hasUsedHold = false;
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
@@ -122,6 +129,56 @@ public class SimpleBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
+        heldBrick = null;       // Clear held brick
+        hasUsedHold = false;    // Reset hold flag
         createNewBrick();
+    }
+
+    // Hold current brick
+    @Override
+    public boolean holdCurrentBrick() {
+        // Can't hold if already used hold for this piece
+        if (hasUsedHold){
+            return false;
+        }
+
+        //Get current brick before swapping
+        Brick currentBrick = brickRotator.getBrick();
+
+        if (heldBrick == null){
+            // FIRST time holding - store current brick and spawn new one
+            heldBrick = currentBrick;
+            createNewBrick();
+        }
+        else{
+            // Swap current brick with held brick
+            brickRotator.setBrick(heldBrick);
+            heldBrick = currentBrick;
+
+            // Reset position to top center
+            currentOffset = new Point(4, 0);
+
+            // Check if swapped brick can be placed
+            if (MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(),
+                    (int) currentOffset.getX(), (int) currentOffset.getY())) {
+                // Can't place swapped brick - revert
+                heldBrick = brickRotator.getBrick();
+                brickRotator.setBrick(currentBrick);
+                return false;
+            }
+        }
+
+        // Mark that hold has been used for this piece
+        hasUsedHold = true;
+        return true;
+    }
+
+    //Get held brick data for preview
+    @Override
+    public int[][] getHeldBrickData() {
+        if(heldBrick == null){
+            return null;
+        }
+        return heldBrick.getShapeMatrix().get(0);
     }
 }
