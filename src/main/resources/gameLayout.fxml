@@ -15,18 +15,49 @@
             style="-fx-background-color: #1a1a2e;">
 
     <!--Main game area centered -->
-    <HBox alignment="CENTER" spacing="10" StackPane.alignment="CENTER">
+    <HBox alignment="TOP_CENTER" spacing="10" StackPane.alignment="CENTER" style="-fx-padding: 60 0 0 0;">
+
+        <!-- Left side panel - HOLD Box -->
+        <VBox spacing="10" alignment="TOP_CENTER" maxHeight="120">
+
+            <!-- HOLD section -->
+            <VBox spacing="0" alignment="TOP_CENTER"
+                  style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 8; -fx-border-color: #000000;
+                  -fx-border-width: 3; -fx-border-radius: 8;"
+                  prefWidth="120" prefHeight="660">
+
+                <!-- Label HOLD as the Header-->
+                <Label text="HOLD"
+                       style="-fx-text-fill: #000000; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 8 0 5 0;"/>
+
+                <!-- Separator Line-->
+                <Region prefHeight="2" style="-fx-background-color: #000000;"/>
+
+                <!-- Single next piece preview in tall box -->
+                <VBox spacing="0" alignment="CENTER" style="-fx-padding: 15 10 15 10;">
+                    <StackPane prefHeight="80" prefWidth="80"
+                               style="-fx-background-color: #000000;">
+                        <GridPane fx:id="holdPiecePanel"
+                                  hgap="1" vgap="1"
+                                  alignment="CENTER"/>
+                    </StackPane>
+                </VBox>
+
+                <!-- Push HOLD box to the top -->
+                <Region VBox.vgrow="ALWAYS"/>
+            </VBox>
+        </VBox>
 
         <!-- Game Board area -->
-        <VBox alignment="CENTER">
+        <VBox alignment="TOP_CENTER">
             <StackPane>
                 <!-- Main game board -->
                 <BorderPane styleClass="gameBoard" fx:id="gameBoard"
                             prefHeight="660" prefWidth="300">
                     <center>
                         <GridPane fx:id="gamePanel" hgap="1" vgap="1"
-                                    style="-fx-background-color: #0a0a15; -fx-border-color: #2a2a3e;
-                                    -fx-border-width: 2;"/>
+                                    style="-fx-background-color: #0a0a15; -fx-border-color: #2a9fd6;
+                                    -fx-border-width: 3;"/>
                     </center>
                 </BorderPane>
 
@@ -45,13 +76,14 @@
 
         </VBox>
 
-    <!-- Right sidebar for next piece Preview -->
-        <VBox spacing="10" alignment="CENTER" prefWidth="130">
+    <!-- Right side panel - NEXT piece Preview Box -->
+        <VBox spacing="10" alignment="TOP_CENTER" prefWidth="120">
 
             <!-- NEXT section -->
-            <VBox spacing="0" alignment="CENTER" prefHeight="660"
+            <VBox spacing="0" alignment="TOP_CENTER"
                   style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 8; -fx-border-color: #000000;
-                  -fx-border-width: 3; -fx-border-radius: 8;">
+                  -fx-border-width: 3; -fx-border-radius: 8;"
+                    prefHeight="660" prefWidth="120">
 
                 <!-- Label Next as the Header-->
                 <Label text="NEXT"
@@ -70,7 +102,7 @@
                     </StackPane>
                 </VBox>
 
-                <!-- Bottom padding to make it taller -->
+                <!-- Push NEXT PREVIEW box to top -->
                 <Region VBox.vgrow="ALWAYS"/> <!-- Fills Remaining space Dynamically-->
             </VBox>
 
