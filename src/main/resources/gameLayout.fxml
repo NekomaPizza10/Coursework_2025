@@ -77,7 +77,7 @@
         </VBox>
 
     <!-- Right side panel - NEXT piece Preview Box -->
-        <VBox spacing="10" alignment="TOP_CENTER" maxWidth="120" maxHeight="660">
+        <VBox spacing="10" alignment="TOP_CENTER" maxWidth="120" maxHeight="160">
 
             <!-- NEXT section -->
             <VBox spacing="0" alignment="TOP_CENTER"
