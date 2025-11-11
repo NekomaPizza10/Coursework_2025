@@ -18,12 +18,25 @@ public class SimpleBoard implements Board {
 
     //Hold functionality fields
     private Brick heldBrick = null;         //Store the held brick
-    private boolean hasUsedHold = false;    // Prevent multiple holds per piece
+    private boolean hasUsedHold = false;
 
+    // Prevent multiple holds per piece
     public SimpleBoard(int width, int height) {
-        this.width = width;
-        this.height = height;
-        currentGameMatrix = new int[width][height];
+        System.out.println("SimpleBoard creating matrix " + 20 + " × " + 10);
+        this.width = width;     //10
+        this.height = height;   //20
+
+        // DEBUG: Print the dimensions BEFORE accessing the matrix
+        System.out.println("=== BOARD DIMENSIONS ===");
+        System.out.println("Constructor received - width: " + width + ", height: " + height);
+        System.out.println("Matrix will be created as: currentGameMatrix[" + width + "][" + height + "]");
+
+        currentGameMatrix = new int[20][10];     //NOTE:[rows][cols]
+        currentOffset = new Point (0,0); // temp safe default
+
+        // Now we can safely access it
+        System.out.println("Matrix actual dimensions: " + currentGameMatrix.length + " rows x " +
+                (currentGameMatrix.length > 0 ? currentGameMatrix[0].length : 0) + " columns");
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
@@ -36,6 +49,9 @@ public class SimpleBoard implements Board {
         p.translate(0, 1);
         boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
         if (conflict) {
+            int brickHeight = brickRotator.getCurrentShape().length;
+            int maxY = 20 - brickHeight;  //Snap to bottom row
+
             return false;
         } else {
             currentOffset = p;
@@ -89,7 +105,22 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(4, 0);   //FIXED: Start at the top
+        int brickHeight = brickRotator.getCurrentShape()[0].length;
+        if(brickHeight > 20){
+            //Brick too tall - clamp to bottom
+            currentOffset.y = 20 - brickHeight;
+        } else{
+            currentOffset.y =0;
+
+            int brickWidth = brickRotator.getCurrentShape()[0].length;
+            currentOffset.x = (width - brickWidth) / 2;
+
+            System.out.println("=== NEW BRICK CREATED ===");
+            System.out.println("CENTRE CHECK: brickWidth=" + brickWidth + "  x=" + currentOffset.x);
+        }
+
+        System.out.println("=== NEW BRICK CREATED ===");
+        System.out.println("Starting position: X=" + currentOffset.x + ", Y=" + currentOffset.y);
 
         // Reset hold flag when new brick is created
         hasUsedHold = false;
@@ -108,6 +139,11 @@ public class SimpleBoard implements Board {
 
     @Override
     public void mergeBrickToBackground() {
+        int brickHeight = brickRotator.getCurrentShape().length;
+        int maxY = 20 -brickHeight;
+        if (currentOffset.y > maxY){
+            currentOffset.y = maxY;
+        }
         currentGameMatrix = MatrixOperations.merge(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
@@ -127,7 +163,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public void newGame() {
-        currentGameMatrix = new int[width][height];
+        currentGameMatrix = new int[20][10];
         score.reset();
         heldBrick = null;       // Clear held brick
         hasUsedHold = false;    // Reset hold flag
@@ -144,6 +180,8 @@ public class SimpleBoard implements Board {
 
         //Get current brick before swapping
         Brick currentBrick = brickRotator.getBrick();
+        //Reset the shape index to 0
+        brickRotator.setCurrentShape(0);
 
         if (heldBrick == null){
             // FIRST time holding - store current brick and spawn new one
@@ -156,7 +194,7 @@ public class SimpleBoard implements Board {
             heldBrick = currentBrick;
 
             // Reset position to top center
-            currentOffset = new Point(4, 0);
+            currentOffset = new Point(3, 0);
 
             // Check if swapped brick can be placed
             if (MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(),
